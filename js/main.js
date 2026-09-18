@@ -48,6 +48,17 @@ function populateContent() {
       .join('');
   }
 
+  // --- 此刻 NOW ---
+  const nowList = document.getElementById('nowList');
+  if (nowList && SITE.now && SITE.now.items) {
+    nowList.innerHTML = SITE.now.items.map(item =>
+      '<div class="now-item">' +
+        '<span class="now-item-label">' + item.label + '</span>' +
+        '<span class="now-item-text">' + item.text + '</span>' +
+      '</div>'
+    ).join('');
+  }
+
   // --- 经历时间线 ---
   const timeline = document.getElementById('timeline');
   if (timeline && SITE.experience) {
@@ -128,9 +139,29 @@ function renderHomeNotes(list) {
   }).join('');
 }
 
-function renderNotesList(list) {
+/* 首页笔记空状态：数据库已配置但还没有已发布笔记时显示 */
+function renderHomeNotesEmpty() {
+  const notesGrid = document.getElementById('notesGrid');
+  if (!notesGrid) return;
+  notesGrid.innerHTML =
+    '<div class="notes-empty">' +
+      '<div class="notes-empty-title">第一篇笔记正在酝酿</div>' +
+      '<div class="notes-empty-sub">想清楚再写，写下来的才算数。</div>' +
+    '</div>';
+}
+
+function renderNotesList(list, fromFilter) {
   const notesList = document.querySelector('.notes-list');
   if (!notesList || !list) return;
+
+  if (list.length === 0) {
+    notesList.innerHTML =
+      '<div class="notes-empty">' +
+        '<div class="notes-empty-title">' + (fromFilter ? '没有匹配的笔记' : '还没有发布的笔记') + '</div>' +
+        '<div class="notes-empty-sub">' + (fromFilter ? '换个关键词或标签试试。' : '第一篇正在酝酿中。') + '</div>' +
+      '</div>';
+    return;
+  }
 
   notesList.innerHTML = list.map(n => {
     const inner =
@@ -141,6 +172,7 @@ function renderNotesList(list) {
       '<div class="note-item-body">' +
         '<div class="note-item-tags">' +
           '<span class="note-item-tag">' + n.tag + '</span>' +
+          (n.readingMinutes ? '<span class="note-item-reading">约 ' + n.readingMinutes + ' 分钟</span>' : '') +
         '</div>' +
         '<h2 class="note-item-title">' + n.title + '</h2>' +
         '<p class="note-item-excerpt">' + n.excerpt + '</p>' +
@@ -154,9 +186,56 @@ function renderNotesList(list) {
   }).join('');
 }
 
+/* ---- 笔记页：搜索 + 标签筛选 ----
+   notesCache 保存当前全集（静态示例或数据库笔记），
+   筛选只作用在列表页，不影响首页卡片。 */
+let notesCache = [];
+let notesFilter = { q: '', tag: '' };
+
+function setNotesCache(list) {
+  notesCache = list || [];
+  renderTagChips(notesCache);
+  applyNotesFilter();
+}
+
+function renderTagChips(list) {
+  const tagsEl = document.getElementById('notesTags');
+  if (!tagsEl) return;
+  const tags = [];
+  list.forEach(n => { if (n.tag && tags.indexOf(n.tag) === -1) tags.push(n.tag); });
+  tagsEl.innerHTML = '<button class="notes-tag-chip active" data-tag="">全部</button>' +
+    tags.map(t => '<button class="notes-tag-chip" data-tag="' + t + '">' + t + '</button>').join('');
+  tagsEl.querySelectorAll('.notes-tag-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      tagsEl.querySelectorAll('.notes-tag-chip').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      notesFilter.tag = btn.getAttribute('data-tag');
+      applyNotesFilter();
+    });
+  });
+}
+
+function applyNotesFilter() {
+  if (!document.querySelector('.notes-list')) return;
+  let list = notesCache;
+  if (notesFilter.tag) list = list.filter(n => n.tag === notesFilter.tag);
+  if (notesFilter.q) {
+    list = list.filter(n => ((n.title || '') + ' ' + (n.excerpt || '')).toLowerCase().indexOf(notesFilter.q) !== -1);
+  }
+  renderNotesList(list, true);
+}
+
+const notesSearchEl = document.getElementById('notesSearch');
+if (notesSearchEl) {
+  notesSearchEl.addEventListener('input', () => {
+    notesFilter.q = notesSearchEl.value.trim().toLowerCase();
+    applyNotesFilter();
+  });
+}
+
 /* 先用静态内容渲染，保证页面秒开 */
 renderHomeNotes(typeof SITE !== 'undefined' ? SITE.notes : []);
-renderNotesList(typeof SITE !== 'undefined' ? SITE.notes : []);
+setNotesCache(typeof SITE !== 'undefined' ? SITE.notes : []);
 
 /* 如果配置了数据库，用在线笔记替换静态内容 */
 async function upgradeNotesFromDB() {
@@ -165,9 +244,14 @@ async function upgradeNotesFromDB() {
   if (!needsNotes) return;
   try {
     const notes = await DB.listPublished();
-    if (!notes || notes.length === 0) return;
-    renderHomeNotes(notes);
-    renderNotesList(notes);
+    if (notes && notes.length > 0) {
+      renderHomeNotes(notes);
+      setNotesCache(notes);
+    } else {
+      // 数据库已配置但还没有笔记：显示空状态，不再展示静态示例
+      renderHomeNotesEmpty();
+      setNotesCache([]);
+    }
   } catch (e) {
     console.warn('读取在线笔记失败，保留静态内容', e);
   }

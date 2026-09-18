@@ -56,6 +56,19 @@ const SITE = {
     ],
   },
 
+  /* ---- 此刻 NOW ----
+     你"当下正在做的事"，显示在首页关于和经历之间。
+     改 items 里的内容就行，updated 是更新日期（如 2026.09）。 */
+  now: {
+    updated: "2026.09",
+    items: [
+      { label: "在学", text: "驾照，抽空练车" },
+      { label: "在做", text: "BHop 训练工具、AI 音乐、还有这个网站" },
+      { label: "在想", text: "八木仁平的问题：我真正想做的事是什么" },
+      { label: "在找", text: "东莞袁屋边附近的房子，600–1000/月" },
+    ],
+  },
+
   /* ---- 经历时间线 ---- */
   // 每条经历是一个 { } 块，复制一个块就能加一条经历
   experience: [
@@ -172,7 +185,7 @@ const SITE = {
     email: "2361802209@qq.com",  // 你的邮箱
     // 社交链接 — href 改成你的链接，label 改成显示名称
     links: [
-      { label: "GitHub", href: "#" },
+      { label: "GitHub", href: "https://github.com/lpeed" },
       { label: "微信", href: "#" },
       { label: "B站", href: "#" },
       { label: "Email", href: "mailto:2361802209@qq.com" },

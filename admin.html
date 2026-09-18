@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23C67B5C'/></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%234A7BA6'/></svg>">
 
   <style>
     :root {
@@ -20,7 +20,7 @@
       --text-dark: #1A1714;
       --text-mid: #5C544A;
       --text-light: #8A8074;
-      --accent: #C67B5C;
+      --accent: #4A7BA6;
       --accent-dim: #A86547;
       --danger: #B5543A;
       --ok: #6B8F5E;
@@ -246,12 +246,12 @@
     }
 
     .admin-note-item:hover {
-      border-color: rgba(198, 123, 92, 0.3);
+      border-color: rgba(74, 123, 166, 0.3);
     }
 
     .admin-note-item.active {
       border-color: var(--accent);
-      box-shadow: 0 4px 16px rgba(198, 123, 92, 0.12);
+      box-shadow: 0 4px 16px rgba(74, 123, 166, 0.12);
     }
 
     .admin-note-item-title {
@@ -449,6 +449,28 @@
       margin-top: 0.5rem;
     }
 
+    /* 草稿恢复提示条 */
+    .draft-banner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.25rem;
+      background: rgba(74, 123, 166, 0.08);
+      border: 1px solid rgba(74, 123, 166, 0.25);
+      border-radius: 0.625rem;
+      font-size: 0.8125rem;
+      color: var(--text-mid);
+      flex-wrap: wrap;
+    }
+
+    .draft-banner-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-shrink: 0;
+    }
+
     @media (max-width: 860px) {
       .admin-shell { grid-template-columns: 1fr; }
       .admin-list {
@@ -511,6 +533,14 @@
 
       <!-- 编辑器 -->
       <main class="admin-editor">
+        <div class="draft-banner" id="draftBanner" style="display:none;">
+          <span id="draftBannerText">检测到未保存的草稿</span>
+          <span class="draft-banner-actions">
+            <button class="btn btn-primary btn-sm" id="draftRestoreBtn">恢复草稿</button>
+            <button class="btn btn-ghost btn-sm" id="draftDiscardBtn">丢弃</button>
+          </span>
+        </div>
+
         <div class="editor-row">
           <div class="field">
             <label>标题</label>
@@ -537,7 +567,7 @@
 
 支持 **加粗**、列表、引用、代码块、表格等 Markdown 语法。"></textarea>
           </div>
-          <div class="editor-hint" id="wordCount">0 字</div>
+          <div class="editor-hint"><span id="wordCount">0 字</span> · Ctrl+S 快速保存 <span id="draftHint" style="margin-left:0.75rem;"></span></div>
         </div>
 
         <div class="editor-footer">
@@ -636,6 +666,7 @@
       loginView.style.display = 'none';
       adminView.style.display = 'block';
       await refreshList();
+      checkDraft();
     }
 
     async function refreshList(keepId) {
@@ -742,6 +773,7 @@
           await DB.create(data);
           showToast(data.published ? '已发布！网站上立刻能看到' : '已存为草稿', 'ok');
         }
+        clearDraft();  // 保存成功后清掉本地草稿
         await refreshList();
         // 新建后选中新笔记
         if (!currentId && notes.length > 0) {
@@ -798,6 +830,94 @@
       document.getElementById('publishLabel').textContent = on ? '公开发布' : '存为草稿（仅自己可见）';
     }
     document.getElementById('editPublished').addEventListener('change', updatePublishLabel);
+
+    /* ---- 草稿自动保存（localStorage，防浏览器崩溃/误关） ---- */
+    const DRAFT_KEY = 'lpeed_admin_draft';
+    let draftTimer = null;
+
+    function collectEditorState() {
+      return {
+        id: currentId,
+        title: document.getElementById('editTitle').value,
+        tag: document.getElementById('editTag').value,
+        excerpt: document.getElementById('editExcerpt').value,
+        content: document.getElementById('editContent').value,
+        published: document.getElementById('editPublished').checked,
+        savedAt: Date.now(),
+      };
+    }
+
+    function scheduleDraftSave() {
+      clearTimeout(draftTimer);
+      draftTimer = setTimeout(() => {
+        const d = collectEditorState();
+        if (!d.title.trim() && !d.content.trim()) {
+          localStorage.removeItem(DRAFT_KEY);
+          document.getElementById('draftHint').textContent = '';
+          return;
+        }
+        localStorage.setItem(DRAFT_KEY, JSON.stringify(d));
+        const t = new Date(d.savedAt);
+        document.getElementById('draftHint').textContent =
+          '· 本地草稿 ' + String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0');
+      }, 800);
+    }
+
+    function clearDraft() {
+      localStorage.removeItem(DRAFT_KEY);
+      document.getElementById('draftHint').textContent = '';
+      document.getElementById('draftBanner').style.display = 'none';
+    }
+
+    ['editTitle', 'editTag', 'editExcerpt', 'editContent'].forEach(id => {
+      document.getElementById(id).addEventListener('input', scheduleDraftSave);
+    });
+    document.getElementById('editPublished').addEventListener('change', scheduleDraftSave);
+
+    /* 进入后台时检测上次未保存的草稿 */
+    function checkDraft() {
+      let d = null;
+      try { d = JSON.parse(localStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) { return; }
+      if (!d || (!d.title && !d.content)) return;
+
+      const dt = new Date(d.savedAt);
+      document.getElementById('draftBannerText').textContent =
+        '检测到 ' + (dt.getMonth() + 1) + '月' + dt.getDate() + '日 ' +
+        String(dt.getHours()).padStart(2, '0') + ':' + String(dt.getMinutes()).padStart(2, '0') +
+        ' 有一篇未保存的草稿' + (d.title ? '「' + d.title + '」' : '');
+      document.getElementById('draftBanner').style.display = 'flex';
+
+      document.getElementById('draftRestoreBtn').onclick = () => {
+        currentId = d.id || null;
+        document.getElementById('editTitle').value = d.title;
+        document.getElementById('editTag').value = d.tag;
+        document.getElementById('editExcerpt').value = d.excerpt;
+        document.getElementById('editContent').value = d.content;
+        document.getElementById('editPublished').checked = d.published;
+        document.getElementById('deleteBtn').style.display = currentId ? '' : 'none';
+        document.getElementById('saveBtn').textContent = currentId ? '保存修改' : '保存发布';
+        updateWordCount();
+        updatePublishLabel();
+        if (previewOn) updatePreview();
+        refreshListActive();
+        document.getElementById('draftBanner').style.display = 'none';
+        showToast('草稿已恢复', 'ok');
+      };
+
+      document.getElementById('draftDiscardBtn').onclick = () => {
+        clearDraft();
+        showToast('草稿已丢弃');
+      };
+    }
+
+    /* ---- Ctrl+S / Cmd+S 快速保存 ---- */
+    document.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') {
+        if (adminView.style.display === 'none') return;
+        e.preventDefault();
+        document.getElementById('saveBtn').click();
+      }
+    });
   </script>
 </body>
 </html>

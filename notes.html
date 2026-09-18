@@ -11,7 +11,7 @@
 
   <link rel="stylesheet" href="css/style.css">
 
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23C67B5C'/></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%234A7BA6'/></svg>">
 
   <style>
     .notes-page {
@@ -81,7 +81,7 @@
     }
 
     .note-item:hover {
-      border-color: rgba(198, 123, 92, 0.2);
+      border-color: rgba(74, 123, 166, 0.2);
       box-shadow: 0 8px 30px rgba(26, 23, 20, 0.06);
       transform: translateY(-2px);
     }
@@ -228,6 +228,11 @@
         </a>
         <h1 class="notes-page-title">探索<span>笔记</span></h1>
         <p class="notes-page-desc">记录思考的过程，而非结论。这里是没有最终答案的问题。</p>
+      </div>
+
+      <div class="notes-tools">
+        <input type="text" id="notesSearch" class="notes-search" placeholder="搜索标题或摘要…" aria-label="搜索笔记">
+        <div class="notes-tags" id="notesTags"></div>
       </div>
 
       <div class="notes-list">

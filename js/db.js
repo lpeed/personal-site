@@ -30,13 +30,19 @@ const DB = {
   _fmt(note) {
     const d = new Date(note.created_at);
     const months = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+    // 阅读时长估算：中文约 400 字/分钟，英文约 200 词/分钟
+    const text = (note.content || '');
+    const cnChars = (text.match(/[一-龥]/g) || []).length;
+    const enWords = (text.replace(/[一-龥]/g, ' ').match(/[a-zA-Z0-9]+/g) || []).length;
+    const readingMinutes = Math.max(1, Math.round(cnChars / 400 + enWords / 200));
     return {
       id: note.id,
       title: note.title,
       tag: note.tag || '',
       excerpt: note.excerpt || '',
-      content: note.content || '',
+      content: text,
       published: note.published,
+      readingMinutes: readingMinutes,
       day: String(d.getDate()).padStart(2, '0'),
       month: months[d.getMonth()],
       year: String(d.getFullYear()),
@@ -44,11 +50,11 @@ const DB = {
     };
   },
 
-  /* 公开读取：只拿已发布的（列表用，不取正文，速度快） */
+  /* 公开读取：只拿已发布的（列表用） */
   async listPublished() {
     const { data, error } = await this.client
       .from('notes')
-      .select('id,title,tag,excerpt,published,created_at')
+      .select('id,title,tag,excerpt,content,published,created_at')
       .eq('published', true)
       .order('created_at', { ascending: false });
     if (error) throw error;
