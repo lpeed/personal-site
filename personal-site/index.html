@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1peed — 个人简历 & 探索笔记</title>
+  <meta name="description" content="网络工程出身，现居东莞。在做 BHop 训练工具、AI 音乐实验和自动化系统。记录探索期的思考。">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="1peed">
+  <meta property="og:title" content="1peed — 个人简历 & 探索笔记">
+  <meta property="og:description" content="网络工程出身，现居东莞。在做 BHop 训练工具、AI 音乐实验和自动化系统。记录探索期的思考。">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,500&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%234A7BA6'/></svg>">
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div class="loader" id="loader">
+    <div class="loader-text">
+      <span class="loader-bracket">[</span>
+      <span class="loader-percent" id="loaderPercent">0</span>
+      <span class="loader-bracket">]</span>
+    </div>
+    <div class="loader-bar">
+      <div class="loader-bar-fill" id="loaderBar"></div>
+    </div>
+  </div>
+
+  <!-- Custom Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-dot" id="cursorDot"></div>
+
+  <!-- Grain Overlay -->
+  <div class="grain"></div>
+
+  <!-- Navigation -->
+  <nav class="nav" id="nav">
+    <a href="#hero" class="nav-logo" data-cursor="hover">
+      <span class="nav-logo-mark"></span>
+    </a>
+    <div class="nav-links">
+      <a href="#about" class="nav-link" data-cursor="hover"><span class="nav-link-num">01</span> 关于</a>
+      <a href="#experience" class="nav-link" data-cursor="hover"><span class="nav-link-num">02</span> 经历</a>
+      <a href="#projects" class="nav-link" data-cursor="hover"><span class="nav-link-num">03</span> 作品</a>
+      <a href="#notes" class="nav-link" data-cursor="hover"><span class="nav-link-num">04</span> 笔记</a>
+      <a href="#contact" class="nav-link" data-cursor="hover"><span class="nav-link-num">05</span> 联系</a>
+    </div>
+    <div class="nav-menu-btn" id="navMenuBtn" data-cursor="hover">
+      <span></span><span></span>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#about" class="mobile-menu-link"><span>01</span>关于</a>
+    <a href="#experience" class="mobile-menu-link"><span>02</span>经历</a>
+    <a href="#projects" class="mobile-menu-link"><span>03</span>作品</a>
+    <a href="#notes" class="mobile-menu-link"><span>04</span>笔记</a>
+    <a href="#contact" class="mobile-menu-link"><span>05</span>联系</a>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-bar" id="progressBar"></div>
+
+  <main>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero" id="hero">
+      <div class="hero-bg">
+        <div class="hero-glow hero-glow-1"></div>
+        <div class="hero-glow hero-glow-2"></div>
+        <div class="hero-glow hero-glow-3"></div>
+      </div>
+
+      <div class="hero-content">
+        <div class="hero-tag" id="heroTag">
+          <span class="hero-tag-dot"></span>
+          <span data-field="hero-status">正在探索</span>
+        </div>
+
+        <h1 class="hero-title">
+          <span class="hero-title-line" data-reveal>
+            <span class="hero-title-word" data-field="hero-intro">Hello,</span>
+          </span>
+          <span class="hero-title-line" data-reveal>
+            <span class="hero-title-word">I'm</span>
+            <span class="hero-title-word hero-title-name" data-field="hero-name">你的名字</span>
+          </span>
+          <span class="hero-title-line hero-title-sub" data-reveal>
+            <span class="hero-title-word">— an</span>
+            <span class="hero-title-word hero-title-role" data-field="hero-role1">explorer</span>
+            <span class="hero-title-word">&</span>
+            <span class="hero-title-word hero-title-role-2" data-field="hero-role2">maker</span>
+          </span>
+        </h1>
+
+        <p class="hero-desc" data-reveal-delay data-field="hero-desc">
+          一句话介绍
+        </p>
+
+        <div class="hero-actions" data-reveal-delay-2>
+          <a href="#projects" class="btn btn-primary" data-cursor="hover" data-magnetic>
+            <span>查看作品</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a href="#contact" class="btn btn-ghost" data-cursor="hover" data-magnetic>
+            <span>联系我</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-scroll" id="heroScroll">
+        <span>向下滚动</span>
+        <div class="hero-scroll-line"></div>
+      </div>
+
+      <div class="hero-meta">
+        <div class="hero-meta-item">
+          <span class="hero-meta-label">坐标</span>
+          <span class="hero-meta-value" data-field="hero-location">—</span>
+        </div>
+        <div class="hero-meta-item">
+          <span class="hero-meta-label">时间</span>
+          <span class="hero-meta-value" id="heroTime">--:--</span>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ===== ABOUT ===== -->
+    <section class="section about" id="about">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-num" data-fade-up>01 / 关于</span>
+          <h2 class="section-title" data-fade-up>
+            <span>不设限的</span>
+            <span class="section-title-accent">探索者</span>
+          </h2>
+        </div>
+
+        <div class="about-grid">
+          <div class="about-text" data-fade-up>
+            <p class="about-lead" data-field="about-lead">关于我的简介</p>
+            <p class="about-body" data-field="about-body1">详细描述</p>
+            <p class="about-body" data-field="about-body2">详细描述</p>
+          </div>
+
+          <div class="about-side" data-fade-up-delay>
+            <div class="about-card">
+              <div class="about-card-header">
+                <span class="about-card-label">技能栈</span>
+              </div>
+              <div class="skill-tags" id="skillTags">
+                <!-- 由 content.js 自动填充 -->
+              </div>
+            </div>
+
+            <div class="about-card about-card-principles">
+              <div class="about-card-header">
+                <span class="about-card-label">原则</span>
+              </div>
+              <ul class="principles-list" id="principlesList">
+                <!-- 由 content.js 自动填充 -->
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ===== NOW ===== -->
+    <section class="section now" id="now">
+      <div class="container">
+        <div class="now-inner" data-fade-up>
+          <div class="now-header">
+            <span class="now-label">此刻 · Now</span>
+            <span class="now-updated" data-field="now-updated">—</span>
+          </div>
+          <div class="now-list" id="nowList">
+            <!-- 由 content.js 自动填充 -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ===== EXPERIENCE ===== -->
+    <section class="section experience" id="experience">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-num" data-fade-up>02 / 经历</span>
+          <h2 class="section-title" data-fade-up>
+            <span>走过的</span>
+            <span class="section-title-accent">路</span>
+          </h2>
+        </div>
+
+        <div class="timeline" id="timeline">
+          <div class="timeline-line">
+            <div class="timeline-line-progress" id="timelineProgress"></div>
+          </div>
+          <!-- 由 content.js 自动填充 -->
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ===== PROJECTS ===== -->
+    <section class="section projects" id="projects">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-num" data-fade-up>03 / 作品</span>
+          <h2 class="section-title" data-fade-up>
+            <span>创造过的</span>
+            <span class="section-title-accent">东西</span>
+          </h2>
+        </div>
+
+        <div class="projects-grid" id="projectsGrid">
+          <!-- 由 content.js 自动填充 -->
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ===== NOTES ===== -->
+    <section class="section notes" id="notes">
+      <div class="container">
+        <div class="section-header section-header-row">
+          <div>
+            <span class="section-num" data-fade-up>04 / 探索笔记</span>
+            <h2 class="section-title" data-fade-up>
+              <span>正在思考的</span>
+              <span class="section-title-accent">问题</span>
+            </h2>
+          </div>
+          <a href="notes.html" class="notes-all-link" data-cursor="hover" data-fade-up>
+            <span>查看全部</span>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        </div>
+
+        <div class="notes-grid" id="notesGrid">
+          <!-- 由 content.js 自动填充（首页只显示前3条） -->
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ===== CONTACT ===== -->
+    <section class="section contact" id="contact">
+      <div class="container">
+        <div class="contact-inner">
+          <span class="section-num" data-fade-up>05 / 联系</span>
+          <h2 class="contact-title" data-fade-up>
+            有想法？<br>
+            <span class="contact-title-accent">聊聊。</span>
+          </h2>
+          <p class="contact-desc" data-fade-up>
+            无论是合作、交流、还是单纯想聊聊技术与音乐，都欢迎联系。
+          </p>
+
+          <div class="contact-actions" data-fade-up>
+            <a href="#" class="btn btn-primary btn-lg" id="contactEmail" data-cursor="hover" data-magnetic>
+              <span>发邮件</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+          </div>
+
+          <div class="contact-links" id="contactLinks" data-fade-up>
+            <!-- 由 content.js 自动填充 -->
+          </div>
+        </div>
+      </div>
+
+      <footer class="footer">
+        <div class="container">
+          <div class="footer-inner">
+            <span class="footer-text" data-field="footer-name">© 2026 你的名字 · 用心制作</span>
+            <a href="lpeed-studio.html" class="footer-admin-link" data-cursor="hover">管理</a>
+            <span class="footer-text footer-text-right" id="footerTime">--:--:--</span>
+          </div>
+        </div>
+      </footer>
+    </section>
+
+  </main>
+
+  <!-- Scripts -->
+  <script src="content.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/db.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
